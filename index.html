@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7f2">
+  <title>Land! — Sign in</title>
+  <style>
+    :root {
+      --paper:#f8f7f2; --ink:#20231f; --muted:#777b72;
+      --line:#e8e7df; --green:#d9ff70; --card:#fff;
+    }
+    * { box-sizing:border-box }
+    body {
+      margin:0; min-height:100vh; color:var(--ink);
+      background:var(--paper);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    }
+    button,input,textarea { font:inherit }
+    button { color:inherit; cursor:pointer }
+    .topbar {
+      height:64px; display:flex; align-items:center; justify-content:space-between;
+      padding:0 max(22px,calc((100vw - 1200px)/2));
+      border-bottom:1px solid var(--line);
+    }
+    .brand {
+      display:flex; align-items:center; gap:9px; color:var(--ink);
+      text-decoration:none; font-size:1.25rem; font-weight:950; letter-spacing:-.07em;
+    }
+    .brand-mark {
+      width:34px; height:34px; display:grid; place-items:center;
+      border-radius:11px 11px 11px 4px; background:var(--green); font-size:1rem;
+    }
+    .top-note { color:var(--muted); font-size:.8rem }
+    .auth-layout {
+      width:min(1000px,calc(100% - 32px)); min-height:calc(100vh - 105px);
+      display:grid; grid-template-columns:1fr 1fr; align-items:center;
+      gap:55px; margin:auto; padding:45px 0;
+    }
+    .intro { padding:10px }
+    .eyebrow {
+      color:#657349; font-size:.72rem; font-weight:900;
+      letter-spacing:.13em; text-transform:uppercase;
+    }
+    h1 {
+      margin:14px 0; font-size:clamp(3rem,7vw,5.5rem);
+      line-height:.9; letter-spacing:-.085em;
+    }
+    h1 span { color:#708346 }
+    .intro p { max-width:430px; color:var(--muted); line-height:1.7 }
+    .art {
+      position:relative; height:180px; margin-top:28px;
+    }
+    .blob {
+      position:absolute; display:grid; place-items:center;
+      box-shadow:0 12px 30px #343b2512;
+    }
+    .blob.a {
+      left:15px; width:130px; height:150px; transform:rotate(-10deg);
+      border-radius:55% 45% 48% 52%; background:#f8d9d5; font-size:3rem;
+    }
+    .blob.b {
+      left:115px; top:18px; width:110px; height:120px; transform:rotate(10deg);
+      border-radius:48% 52% 42% 58%; background:#f5e9b8; font-size:2.5rem;
+    }
+    .blob.c {
+      left:205px; top:53px; width:82px; height:90px; transform:rotate(-4deg);
+      border-radius:50% 40% 55% 45%; background:#dce8f8; font-size:2rem;
+    }
+    .auth-card {
+      padding:clamp(24px,5vw,42px); border:1px solid var(--line);
+      border-radius:22px; background:var(--card);
+      box-shadow:0 18px 55px #24291a0a;
+    }
+    .tabs {
+      display:grid; grid-template-columns:1fr 1fr; gap:5px;
+      padding:4px; border-radius:12px; background:#f0efe9;
+    }
+    .tab {
+      min-height:39px; border:0; border-radius:9px;
+      background:transparent; color:var(--muted); font-weight:800;
+    }
+    .tab.active { background:white; color:var(--ink); box-shadow:0 1px 5px #00000012 }
+    .card-title { margin:24px 0 5px; font-size:1.6rem; letter-spacing:-.05em }
+    .card-subtitle { margin:0 0 22px; color:var(--muted); font-size:.86rem }
+    .field { margin:14px 0 }
+    .field label { display:block; margin-bottom:7px; font-size:.8rem; font-weight:800 }
+    .field input {
+      width:100%; height:45px; padding:0 12px;
+      border:1px solid var(--line); border-radius:10px; outline:none; background:white;
+    }
+    .field input:focus { border-color:#9caf6a; box-shadow:0 0 0 3px #d9ff7033 }
+    .submit {
+      width:100%; min-height:46px; margin-top:8px;
+      border:0; border-radius:24px; background:var(--green); font-weight:900;
+    }
+    .submit:hover { filter:brightness(.96) }
+    .message { min-height:20px; margin:12px 0 0; color:#a33b32; font-size:.8rem }
+    .fine-print { margin:18px 0 0; color:var(--muted); font-size:.72rem; line-height:1.5 }
+    footer { padding:18px; color:var(--muted); font-size:.72rem; text-align:center }
+    .site { display:none }
+    .site.visible { display:block }
+    .site-header {
+      position:sticky; top:0; z-index:3; display:flex; align-items:center; gap:18px;
+      padding:11px max(18px,calc((100vw - 1200px)/2));
+      border-bottom:1px solid var(--line); background:#f8f7f2ed; backdrop-filter:blur(10px);
+    }
+    .site-search { flex:1; max-width:600px; margin:auto }
+    .site-search input {
+      width:100%; height:41px; padding:0 15px; border:0; border-radius:22px;
+      outline:none; background:#eeede7;
+    }
+    .site-actions { display:flex; align-items:center; gap:10px }
+    .button {
+      min-height:39px; padding:0 15px; border:0; border-radius:22px;
+      background:var(--green); font-weight:800;
+    }
+    .button.secondary { border:1px solid var(--line); background:transparent }
+    .user-label { color:var(--muted); font-size:.78rem }
+    .main { width:min(1200px,calc(100% - 32px)); margin:auto }
+    .hero {
+      display:grid; grid-template-columns:1.2fr .8fr; align-items:center; gap:20px;
+      margin:28px 0 20px; padding:32px clamp(20px,5vw,55px);
+      border-radius:24px; background:#e9eddf;
+    }
+    .hero h2 {
+      margin:10px 0; font-size:clamp(2.7rem,6vw,4.7rem);
+      line-height:.92; letter-spacing:-.08em;
+    }
+    .hero h2 span { color:#708346 }
+    .hero p { max-width:500px; color:#62665c; line-height:1.6 }
+    .hero-art { position:relative; height:150px }
+    .hero-art .blob.a { left:15%; top:0 }
+    .hero-art .blob.b { left:43%; top:10px }
+    .hero-art .blob.c { left:72%; top:45px }
+    .notice {
+      margin:0 0 20px; padding:13px 16px; border:1px solid #ecd6c1;
+      border-radius:12px; background:#fff9f1; color:#624a36;
+      font-size:.82rem; line-height:1.5;
+    }
+    .notice strong { color:#3f3024 }
+    .section-head { margin:25px 0 12px; font-size:1.2rem; letter-spacing:-.04em }
+    .filters { display:flex; gap:8px; overflow:auto; padding:2px 0 12px }
+    .filter {
+      flex:none; padding:8px 14px; border:1px solid var(--line); border-radius:20px;
+      background:transparent; color:#5f625a; font-size:.8rem; font-weight:700;
+    }
+    .filter.active { border-color:var(--ink); background:var(--ink); color:white }
+    .masonry { columns:5 180px; column-gap:13px }
+    .post {
+      display:inline-block; width:100%; margin:0 0 13px; overflow:hidden;
+      break-inside:avoid; border:1px solid var(--line); border-radius:14px; background:white;
+    }
+    .post img { display:block; width:100%; max-height:400px; object-fit:cover }
+    .placeholder {
+      display:grid; min-height:175px; place-items:center; padding:20px;
+      text-align:center; font-size:2.5rem;
+    }
+    .placeholder small { display:block; margin-top:7px; font-size:.68rem; font-weight:800 }
+    .post-content { padding:11px 12px }
+    .post-content h3 { margin:0 0 5px; font-size:.9rem }
+    .post-content p { margin:0; color:var(--muted); font-size:.76rem; line-height:1.45 }
+    .post-meta { display:flex; justify-content:space-between; gap:8px; margin-top:10px; color:var(--muted); font-size:.7rem }
+    .tag { padding:4px 8px; border-radius:12px; background:#f0f0e9; color:#52564c; font-weight:700 }
+    .report { padding:0; border:0; background:none; color:#777; font-size:.7rem }
+    .report:hover { color:#a33b32 }
+    .empty { padding:35px; color:var(--muted); text-align:center }
+    .site-footer { padding:25px 0; color:var(--muted); font-size:.72rem; text-align:center }
+    dialog { width:min(480px,calc(100% - 28px)); padding:0; border:0; border-radius:18px }
+    dialog::backdrop { background:#20231f77; backdrop-filter:blur(3px) }
+    .modal { padding:24px }
+    .modal h2 { margin:0 0 17px }
+    .modal label { display:block; margin:13px 0 6px; font-size:.8rem; font-weight:800 }
+    .modal input,.modal textarea {
+      width:100%; padding:11px; border:1px solid var(--line); border-radius:9px;
+    }
+    .modal textarea { min-height:70px }
+    .modal .check { display:flex; align-items:flex-start; gap:8px; font-weight:500; line-height:1.4 }
+    .modal .check input { width:auto; margin-top:3px }
+    .modal .button { width:100%; margin-top:10px }
+    .close { float:right; border:0; background:none; font-size:1.4rem }
+    @media(max-width:700px) {
+      .auth-layout { grid-template-columns:1fr; gap:15px; padding-top:25px }
+      .intro { padding:0 }
+      .intro h1 { font-size:3.5rem }
+      .art { display:none }
+      .auth-card { max-width:480px; width:100%; margin:auto }
+      .hero { grid-template-columns:1fr; padding:25px 21px }
+      .hero-art { display:none }
+      .masonry { columns:3 145px }
+      .site-header { flex-wrap:wrap; gap:10px }
+      .site-search { order:3; flex-basis:100%; max-width:none }
+      .site-actions { margin-left:auto }
+      .user-label { display:none }
+    }
+    @media(max-width:450px) {
+      .masonry { columns:2 130px; column-gap:9px }
+      .post { margin-bottom:9px }
+      .top-note { font-size:.7rem }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Land home">
+      <span class="brand-mark">L!</span><span>Land!</span>
+    </a>
+    <span class="top-note">A place for things people make</span>
+  </header>
+
+  <main id="authPage" class="auth-layout">
+    <section class="intro">
+      <div class="eyebrow">Human-made images only</div>
+      <h1>Find your<br>kind of <span>image.</span></h1>
+      <p>Discover original post images, collect inspiration, and share work made by people. Sign in to explore Land!</p>
+      <div class="art" aria-hidden="true">
+        <div class="blob a">✿</div><div class="blob b">✳</div><div class="blob c">◡</div>
+      </div>
+    </section>
+
+    <section class="auth-card" aria-label="Account access">
+      <div class="tabs">
+        <button class="tab active" id="loginTab" type="button">Log in</button>
+        <button class="tab" id="signupTab" type="button">Sign up</button>
+      </div>
+      <h2 class="card-title" id="formTitle">Welcome back</h2>
+      <p class="card-subtitle" id="formSubtitle">Log in to continue to Land!.</p>
+
+      <form id="authForm">
+        <div class="field" id="nameField" hidden>
+          <label for="name">Display name</label>
+          <input id="name" name="name" autocomplete="name" maxlength="40" placeholder="What should we call you?">
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required placeholder="you@example.com">
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" minlength="6" required placeholder="At least 6 characters">
+        </div>
+        <button class="submit" id="submitButton" type="submit">Log in</button>
+        <p class="message" id="message" role="status"></p>
+      </form>
+      <p class="fine-print">Demo only: this prototype stores account information in this browser. Don’t use a real password here.</p>
+    </section>
+  </main>
+
+  <div id="site" class="site">
+    <header class="site-header">
+      <a class="brand" href="#"><span class="brand-mark">L!</span><span>Land!</span></a>
+      <div class="site-search"><input id="search" type="search" placeholder="Search images and ideas…" aria-label="Search posts"></div>
+      <div class="site-actions">
+        <span class="user-label" id="userLabel"></span>
+        <button class="button secondary" id="logoutButton" type="button">Log out</button>
+        <button class="button" id="openPost" type="button">＋ Create post</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <section class="hero">
+        <div>
+          <div class="eyebrow">A place for things people make</div>
+          <h2>Find your<br>kind of <span>image.</span></h2>
+          <p>Collect inspiration, discover original post images, and share work made by people.</p>
+        </div>
+        <div class="hero-art" aria-hidden="true">
+          <div class="blob a">✿</div><div class="blob b">✳</div><div class="blob c">◡</div>
+        </div>
+      </section>
+
+      <aside class="notice"><strong>Human-made images only.</strong> AI-generated images aren’t allowed. Posts can be reported. This demo does not verify image origins or enforce bans.</aside>
+
+      <h2 class="section-head">Explore</h2>
+      <nav class="filters" aria-label="Filter posts">
+        <button class="filter active" data-filter="All" type="button">For you</button>
+        <button class="filter" data-filter="Art" type="button">Art</button>
+        <button class="filter" data-filter="Design" type="button">Design</button>
+        <button class="filter" data-filter="Photography" type="button">Photography</button>
+        <button class="filter" data-filter="Moodboards" type="button">Moodboards</button>
+        <button class="filter" data-filter="Illustration" type="button">Illustration</button>
+      </nav>
+      <div id="feed" class="masonry" aria-live="polite"></div>
+      <footer class="site-footer">Land! — Discover and share images made by people.</footer>
+    </main>
+  </div>
+
+  <dialog id="postDialog">
+    <form id="postForm" class="modal">
+      <button class="close" type="button" id="closePost" aria-label="Close">×</button>
+      <h2>Share an image</h2>
+      <label for="imageFile">Image</label>
+      <input id="imageFile" type="file" accept="image/*" required>
+      <label for="postTitle">Title</label>
+      <input id="postTitle" maxlength="70" required placeholder="Give your post a title">
+      <label for="postCaption">Caption</label>
+      <textarea id="postCaption" maxlength="240" placeholder="A little context about your image"></textarea>
+      <label for="postCategory">Category</label>
+      <input id="postCategory" list="categories" required placeholder="Art, Design, Photography…">
+      <datalist id="categories">
+        <option value="Art"><option value="Design"><option value="Photography">
+        <option value="Moodboards"><option value="Illustration">
+      </datalist>
+      <label class="check"><input id="humanMade" type="checkbox" required>
+        <span>I made this image or have permission to share it, and it is not AI-generated.</span>
+      </label>
+      <button class="button" type="submit">Publish post</button>
+    </form>
+  </dialog>
+
+  <script>
+    // Browser-only demo authentication. Replace with a secure server authentication
+    // system before using this for a real public website.
+    const USERS_KEY = "land_demo_users";
+    const SESSION_KEY = "land_demo_session";
+
+    const authPage = document.getElementById("authPage");
+    const site = document.getElementById("site");
+    const authForm = document.getElementById("authForm");
+    const message = document.getElementById("message");
+    const nameField = document.getElementById("nameField");
+    const passwordInput = document.getElementById("password");
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    let mode = "login";
+    let activeFilter = "All";
+    let userPosts = [];
+
+    function getUsers() {
+      try { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); }
+      catch { return []; }
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      const signup = mode === "signup";
+      loginTab.classList.toggle("active", !signup);
+      signupTab.classList.toggle("active", signup);
+      nameField.hidden = !signup;
+      document.getElementById("name").required = signup;
+      passwordInput.autocomplete = signup ? "new-password" : "current-password";
+      document.getElementById("formTitle").textContent = signup ? "Create your account" : "Welcome back";
+      document.getElementById("formSubtitle").textContent = signup
+        ? "Join Land! to explore and share."
+        : "Log in to continue to Land!.";
+      document.getElementById("submitButton").textContent = signup ? "Create account" : "Log in";
+      message.textContent = "";
+    }
+
+    loginTab.addEventListener("click", () => setMode("login"));
+    signupTab.addEventListener("click", () => setMode("signup"));
+
+    function enterSite(user) {
+      sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+        email:user.email,
+        name:user.name
+      }));
+      authPage.style.display = "none";
+      site.classList.add("visible");
+      document.getElementById("userLabel").textContent = "Hi, " + user.name;
+      renderFeed();
+    }
+
+    authForm.addEventListener("submit", event => {
+      event.preventDefault();
+      message.textContent = "";
+
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = passwordInput.value;
+      const users = getUsers();
+
+      if (mode === "signup") {
+        const name = document.getElementById("name").value.trim();
+        if (users.some(user => user.email === email)) {
+          message.textContent = "An account with that email already exists. Try logging in.";
+          return;
+        }
+        const user = { email, password, name };
+        users.push(user);
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        enterSite(user);
+      } else {
+        const user = users.find(item => item.email === email && item.password === password);
+        if (!user) {
+          message.textContent = "Email or password is incorrect. If you’re new, sign up first.";
+          return;
+        }
+        enterSite(user);
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      site.classList.remove("visible");
+      authPage.style.display = "grid";
+      authForm.reset();
+      setMode("login");
+    });
+
+    const starterPosts = [
+      { title:"Garden in the afternoon", caption:"A quiet corner catching the last warm light.", category:"Photography", art:"🌿", color:"#dce9d2", author:"mossandlight" },
+      { title:"Soft shapes study", caption:"A little color and shape exploration.", category:"Art", art:"◒", color:"#f3d9d5", author:"studiojun" },
+      { title:"Weekend color notes", caption:"Colors saved from an ordinary, lovely day.", category:"Moodboards", art:"✿", color:"#f3e8bb", author:"daynotes" },
+      { title:"Blue hour", caption:"The city just before all the lights come on.", category:"Photography", art:"☾", color:"#dce5f5", author:"ellieframes" },
+      { title:"Little poster idea", caption:"Lettering and tiny doodles from my sketchbook.", category:"Design", art:"HELLO!", color:"#f5d9b4", author:"paperclub" },
+      { title:"Wildflower page", caption:"A page from my botanical illustration practice.", category:"Illustration", art:"❀", color:"#e4e8d4", author:"fern.draws" },
+      { title:"Sunday table", caption:"Found textures, warm light, and a very good pear.", category:"Photography", art:"🍐", color:"#eee5cc", author:"slowmornings" },
+      { title:"Shape language", caption:"Trying to make simple shapes feel like characters.", category:"Art", art:"◉", color:"#e6dff1", author:"mira.makes" },
+      { title:"A little blue", caption:"An inspiration board in shades of blue.", category:"Moodboards", art:"〰", color:"#d9e8ed", author:"softarchive" },
+      { title:"Type and texture", caption:"Handmade marks for a poster in progress.", category:"Design", art:"Aa", color:"#f0d8d1", author:"typeandtea" }
+    ];
+
+    const feed = document.getElementById("feed");
+    const search = document.getElementById("search");
+
+    function makePost(post) {
+      const article = document.createElement("article");
+      article.className = "post";
+
+      if (post.imageUrl) {
+        const img = document.createElement("img");
+        img.src = post.imageUrl;
+        img.alt = post.title;
+        img.loading = "lazy";
+        article.appendChild(img);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "placeholder";
+        placeholder.style.background = post.color;
+        placeholder.append(document.createTextNode(post.art));
+        const small = document.createElement("small");
+        small.textContent = "COMMUNITY INSPIRATION";
+        placeholder.appendChild(small);
+        article.appendChild(placeholder);
+      }
+
+      const content = document.createElement("div");
+      content.className = "post-content";
+
+      const title = document.createElement("h3");
+      title.textContent = post.title;
+      const caption = document.createElement("p");
+      caption.textContent = post.caption || "";
+
+      const meta = document.createElement("div");
+      meta.className = "post-meta";
+      const tag = document.createElement("span");
+      tag.className = "tag";
+      tag.textContent = post.category;
+
+      const right = document.createElement("span");
+      right.textContent = "@" + (post.author || "you");
+
+      const report = document.createElement("button");
+      report.className = "report";
+      report.type = "button";
+      report.textContent = "Report";
+      report.addEventListener("click", () => alert("Report received in this demo. No moderation service is connected."));
+
+      const details = document.createElement("span");
+      details.append(right, document.createTextNode(" · "), report);
+      meta.append(tag, details);
+      content.append(title, caption, meta);
+      article.appendChild(content);
+      return article;
+    }
+
+    function renderFeed() {
+      if (!feed) return;
+      const query = search.value.trim().toLowerCase();
+      const posts = [...userPosts, ...starterPosts].filter(post => {
+        const categoryMatch = activeFilter === "All" || post.category.toLowerCase() === activeFilter.toLowerCase();
+        const searchMatch = `${post.title} ${post.caption} ${post.category} ${post.author}`.toLowerCase().includes(query);
+        return categoryMatch && searchMatch;
+      });
+
+      feed.replaceChildren();
+      if (!posts.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No posts found. Try another search or category.";
+        feed.appendChild(empty);
+      } else {
+        posts.forEach(post => feed.appendChild(makePost(post)));
+      }
+    }
+
+    document.querySelectorAll(".filter").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelector(".filter.active")?.classList.remove("active");
+        button.classList.add("active");
+        activeFilter = button.dataset.filter;
+        renderFeed();
+      });
+    });
+    search.addEventListener("input", renderFeed);
+
+    const postDialog = document.getElementById("postDialog");
+    document.getElementById("openPost").addEventListener("click", () => postDialog.showModal());
+    document.getElementById("closePost").addEventListener("click", () => postDialog.close());
+
+    document.getElementById("postForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const file = document.getElementById("imageFile").files[0];
+      if (!file || !file.type.startsWith("image/")) {
+        alert("Please choose an image file.");
+        return;
+      }
+      userPosts.unshift({
+        title:document.getElementById("postTitle").value.trim(),
+        caption:document.getElementById("postCaption").value.trim(),
+        category:document.getElementById("postCategory").value.trim(),
+        author:"you",
+        imageUrl:URL.createObjectURL(file)
+      });
+      renderFeed();
+      event.target.reset();
+      postDialog.close();
+    });
+
+    // Restore the current browser-tab session, if one exists.
+    try {
+      const session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
+      const user = session && getUsers().find(item => item.email === session.email);
+      if (user) enterSite(user);
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY);
+    }
+  </script>
+</body>
+</html>
